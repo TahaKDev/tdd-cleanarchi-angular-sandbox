@@ -37,6 +37,7 @@
     "@angular/cli": "^19.2.0",
     "@angular/compiler-cli": "^19.2.0",
     "@nx/vite": "^20.0.0",
+    "@stryker-mutator/vitest-runner": "^9.0.1",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.6.0",
     "jsdom": "^22.0.0",
