@@ -7,20 +7,29 @@ import {
   Pyramid,
   pyramidFactory,
 } from '../../core-logic/usecases/answer-submission/pyramidFactory';
-import { providePyramid } from '../../app.config';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('Game component', () => {
   let pyramid: Pyramid;
   let fixture: ComponentFixture<GameComponent>;
+  let httpTestingController: HttpTestingController;
 
   beforeEach(() => {
     pyramid = pyramidFactory();
     TestBed.configureTestingModule({
       imports: [GameComponent],
-      providers: [provideNoopAnimations(), provideHttpClientTesting()],
+      providers: [
+        provideNoopAnimations(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     }).compileComponents();
 
+    httpTestingController = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(GameComponent);
     const component = fixture.componentInstance;
     component.pyramid = pyramid;
@@ -32,23 +41,31 @@ describe('Game component', () => {
   });
 
   it.each`
-    givenAnswer
-    ${'A'}
-    ${'B'}
-  `('upon a right answer, the pyramid should increase', ({ givenAnswer }) => {
-    giveAnswer(givenAnswer, fixture);
-    expectPyramidStepHighlightStatus(1, true);
-    expectPyramidStepHighlightStatus(0, false);
-  });
+    givenAnswer | isRightAnswer
+    ${'A'}      | ${true}
+    ${'B'}      | ${false}
+  `(
+    'upon a right answer, the pyramid should increase',
+    async ({ givenAnswer, isRightAnswer }) => {
+      httpTestingController
+        .expectOne('https://api.example.com/validate-answer')
+        .flush(isRightAnswer);
+      await giveAnswer(givenAnswer, fixture);
+      expectPyramidStepHighlightStatus(1, true);
+      expectPyramidStepHighlightStatus(0, false);
+    },
+  );
 
-  const giveAnswer = (
+  const giveAnswer = async (
     answer: string,
     fixture: ComponentFixture<GameComponent>,
   ) => {
     fixture.debugElement
       .query(By.css(`[data-testid="${answer}:"]`))
       .nativeElement.click();
-    fixture.detectChanges();
+    await fixture.whenStable().then(() => {
+      fixture.detectChanges();
+    });
   };
 
   const expectPyramidStepHighlightStatus = (

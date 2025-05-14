@@ -28,7 +28,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
       useFactory: (pyramid: Pyramid, httpClient: HttpClient) => {
         return new SubmitAnswer(pyramid, httpClient);
       },
-      deps: ['PYRAMID', provideHttpClientTesting],
+      deps: ['PYRAMID', HttpClient],
     },
     providePyramid,
   ],
