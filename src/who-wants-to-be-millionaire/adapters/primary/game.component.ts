@@ -4,9 +4,8 @@ import { PyramidComponent } from './pyramid.component';
 import { CurrentQuestionComponent } from './current-question.component';
 import { Pyramid } from '../../core-logic/usecases/answer-submission/pyramidFactory';
 import { SubmitAnswer } from '../../core-logic/usecases/answer-submission/submitAnswer';
-import { providePyramid } from '../../app.config';
-import { HttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { providePyramid, provideQuestionGateway } from '../../app.config';
+import { QuestionGateway } from '../../core-logic/gateways/questionGateway';
 
 @Component({
   selector: 'game',
@@ -25,11 +24,12 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
   providers: [
     {
       provide: SubmitAnswer,
-      useFactory: (pyramid: Pyramid, httpClient: HttpClient) => {
-        return new SubmitAnswer(pyramid, httpClient);
+      useFactory: (pyramid: Pyramid, questionGateway: QuestionGateway) => {
+        return new SubmitAnswer(pyramid, questionGateway);
       },
-      deps: ['PYRAMID', HttpClient],
+      deps: ['PYRAMID', 'QUESTION_GATEWAY'],
     },
+    provideQuestionGateway,
     providePyramid,
   ],
 })

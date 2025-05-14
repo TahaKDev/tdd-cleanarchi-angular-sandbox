@@ -1,19 +1,15 @@
 import { Pyramid } from './pyramidFactory';
-import { HttpClient } from '@angular/common/http';
-import { lastValueFrom } from 'rxjs';
+import { QuestionGateway } from '../../gateways/questionGateway';
 
 export class SubmitAnswer {
   constructor(
     private readonly pyramid: Pyramid,
-    private readonly httpClient: HttpClient,
+    private readonly questionGateway: QuestionGateway,
   ) {}
 
   async execute(givenAnswer: string): Promise<void> {
-    const isRightAnswer = await lastValueFrom(
-      this.httpClient.post<boolean>('https://api.example.com/validate-answer', {
-        answer: givenAnswer,
-      }),
-    );
+    const isRightAnswer = await this.questionGateway.submitAnswer(givenAnswer);
     if (isRightAnswer) this.pyramid.reachedStepIndex++;
+    else this.pyramid.reachedStepIndex = 0;
   }
 }
