@@ -21,7 +21,7 @@ import { submitAnswer } from '../../core-logic/usecases/answer-submission/submit
   imports: [CurrentQuestionComponent, JokersComponent, PyramidComponent],
 })
 export class GameComponent {
-  @Input() pyramid: Pyramid | undefined = undefined;
+  pyramid: Pyramid | undefined = undefined;
 
   constructor(@Inject('PYRAMID') private pyramidValue: Pyramid) {}
 

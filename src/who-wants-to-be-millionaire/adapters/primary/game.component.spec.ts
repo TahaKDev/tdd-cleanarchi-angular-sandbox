@@ -10,18 +10,6 @@ import {
 } from '../../core-logic/usecases/answer-submission/pyramidFactory';
 import { providePyramid } from '../../app.config';
 
-Object.defineProperty(global.Element.prototype, 'animate', {
-  value: () => ({
-    onfinish: () => {},
-    play: () => {},
-    pause: () => {},
-    reverse: () => {},
-    finish: () => {},
-    cancel: () => {},
-  }),
-  writable: true,
-});
-
 describe('Game component', () => {
   let pyramid: Pyramid;
   let fixture: ComponentFixture<GameComponent>;
