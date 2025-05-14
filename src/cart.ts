@@ -24,15 +24,18 @@ export class OrderLine {
 export class Cart {
   orderLines: OrderLine[];
 
-  constructor(orderLine: OrderLine[]) {
+  constructor(
+    orderLine: OrderLine[],
+    private isFirstPurchase: boolean,
+  ) {
     this.orderLines = orderLine;
   }
 
   public compute() {
-    let total = 0;
-    for (const item of this.orderLines) {
-      total += item.totalPrice;
-    }
-    return total;
+    const total = this.orderLines.reduce(
+      (sum, item) => sum + item.totalPrice,
+      0,
+    );
+    return this.isFirstPurchase ? Math.max(total - 5, 0) : total;
   }
 }
