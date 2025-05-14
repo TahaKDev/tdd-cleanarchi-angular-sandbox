@@ -20,7 +20,6 @@ import {CountdownComponent} from './countdown.component';
     NgOptimizedImage,
     PossibleAnswersComponent,
     CountdownComponent
-  ],
-  styleUrls: ['./current-question.component.scss']
+  ]
 })
 export class CurrentQuestionComponent {}

@@ -12,7 +12,6 @@ import { Component } from '@angular/core';
         </li>
       </ul>
     </div>
-  `,
-  styleUrls: ['./jokers.component.scss']
+  `
 })
 export class JokersComponent {}

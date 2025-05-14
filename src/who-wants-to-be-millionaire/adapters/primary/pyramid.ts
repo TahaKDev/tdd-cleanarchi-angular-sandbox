@@ -24,7 +24,6 @@ import { Component } from '@angular/core';
         </ul>
       </div>
     </div>
-  `,
-  styleUrls: ['./pyramid.component.scss']
+  `
 })
 export class PyramidComponent {}

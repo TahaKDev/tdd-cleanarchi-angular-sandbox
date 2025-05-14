@@ -6,8 +6,7 @@ import {Component, Input} from '@angular/core';
     <div class="bg-gray-900 my-6 rounded-lg text-white p-2 text-center">
       {{ title }}
     </div>
-  `,
-  styleUrls: ['./question-title.component.scss']
+  `
 })
 export class QuestionTitleComponent {
   @Input() title = '';
