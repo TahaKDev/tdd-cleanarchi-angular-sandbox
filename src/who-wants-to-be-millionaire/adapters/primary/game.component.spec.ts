@@ -2,13 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GameComponent } from './game.component';
 import { By } from '@angular/platform-browser';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { describe, it, expect, beforeEach } from 'vitest';
-import { list } from 'postcss';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   Pyramid,
   pyramidFactory,
 } from '../../core-logic/usecases/answer-submission/pyramidFactory';
 import { providePyramid } from '../../app.config';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('Game component', () => {
   let pyramid: Pyramid;
@@ -18,7 +18,7 @@ describe('Game component', () => {
     pyramid = pyramidFactory();
     TestBed.configureTestingModule({
       imports: [GameComponent],
-      providers: [provideNoopAnimations(), providePyramid],
+      providers: [provideNoopAnimations(), provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GameComponent);

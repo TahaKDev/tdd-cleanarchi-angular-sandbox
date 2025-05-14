@@ -14,11 +14,6 @@ export class SubmitAnswer {
         answer: givenAnswer,
       }),
     );
-    console.log(
-      this.httpClient.post<boolean>('https://api.example.com/validate-answer', {
-        answer: givenAnswer,
-      }),
-    );
     if (isRightAnswer) this.pyramid.reachedStepIndex++;
   }
 }

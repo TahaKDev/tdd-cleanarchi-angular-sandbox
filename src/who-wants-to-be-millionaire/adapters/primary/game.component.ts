@@ -1,15 +1,18 @@
-import { Component, Inject, Input } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { JokersComponent } from './jokers.component';
 import { PyramidComponent } from './pyramid.component';
 import { CurrentQuestionComponent } from './current-question.component';
 import { Pyramid } from '../../core-logic/usecases/answer-submission/pyramidFactory';
-import { submitAnswer } from '../../core-logic/usecases/answer-submission/submitAnswer';
+import { SubmitAnswer } from '../../core-logic/usecases/answer-submission/submitAnswer';
+import { providePyramid } from '../../app.config';
+import { HttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 @Component({
   selector: 'game',
   template: ` <div class="flex justify-between mx-3">
     <div class="flex flex-col w-6/12">
-      <current-question (onGivenAnswer)="submitAnswer($event)" />
+      <current-question (onGivenAnswer)="_submitAnswer($event)" />
     </div>
     <div class="flex flex-col w-6/12 bg-gradient-to-r from-indigo-900 ml-5">
       <div>
@@ -19,17 +22,30 @@ import { submitAnswer } from '../../core-logic/usecases/answer-submission/submit
     </div>
   </div>`,
   imports: [CurrentQuestionComponent, JokersComponent, PyramidComponent],
+  providers: [
+    {
+      provide: SubmitAnswer,
+      useFactory: (pyramid: Pyramid, httpClient: HttpClient) => {
+        return new SubmitAnswer(pyramid, httpClient);
+      },
+      deps: ['PYRAMID', provideHttpClientTesting],
+    },
+    providePyramid,
+  ],
 })
 export class GameComponent {
   pyramid: Pyramid | undefined = undefined;
 
-  constructor(@Inject('PYRAMID') private pyramidValue: Pyramid) {}
+  constructor(
+    @Inject('PYRAMID') private pyramidValue: Pyramid,
+    private submitAnswer: SubmitAnswer,
+  ) {}
 
   ngOnInit() {
     this.pyramid = this.pyramidValue;
   }
 
-  submitAnswer(answer: string) {
-    submitAnswer(answer, this.pyramid!);
+  async _submitAnswer(answer: string) {
+    await this.submitAnswer.execute(answer);
   }
 }
