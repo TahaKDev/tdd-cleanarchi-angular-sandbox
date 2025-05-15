@@ -1,8 +1,5 @@
 import { QuestionGateway } from '../../../core-logic/gateways/questionGateway';
-import {
-  AnswerLetter,
-  Question,
-} from '../../../core-logic/usecases/question-retrieval/question';
+import { AnswerLetter, Question } from '../../../core-logic/models/question';
 
 export class FakeQuestionGateway implements QuestionGateway {
   correctAnswerByQuestionId: Record<Question['id'], AnswerLetter> = {};

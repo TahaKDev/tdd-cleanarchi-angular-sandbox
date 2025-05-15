@@ -1,20 +1,23 @@
-import { Question } from './question';
+import { Question } from '../../models/question';
 import { FakeQuestionGateway } from '../../../adapters/secondary/gateways/fakeQuestionGateway';
 import { RetrieveQuestion } from './retrieveQuestion';
+import { QuestionService } from '../../models/questionService';
 
 describe('Question retrieval Use Case', () => {
   let retrieveQuestion: RetrieveQuestion;
   let questionGateway: FakeQuestionGateway;
+  let questionService: QuestionService;
 
   beforeEach(() => {
     questionGateway = new FakeQuestionGateway();
-    retrieveQuestion = new RetrieveQuestion(questionGateway);
+    questionService = new QuestionService();
+    retrieveQuestion = new RetrieveQuestion(questionGateway, questionService);
   });
 
   it('should retrieve the next question', async () => {
     questionGateway.currentQuestion = aQuestion;
     await retrieveQuestion.execute();
-    expect(retrieveQuestion.currentQuestionSignal()).toEqual(aQuestion);
+    expect(questionService.currentQuestionSignal()).toEqual(aQuestion);
   });
 
   const aQuestion: Question = {

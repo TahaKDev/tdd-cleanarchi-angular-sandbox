@@ -7,7 +7,7 @@ import {
   transition,
 } from '@angular/animations';
 import { Observable } from 'rxjs';
-import { CountdownService } from '../../../core-logic/countdown.service';
+import { CountdownService } from '../../../../core-logic/countdown.service';
 
 @Component({
   selector: 'game-countdown',

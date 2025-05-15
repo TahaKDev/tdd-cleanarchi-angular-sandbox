@@ -1,56 +1,109 @@
-import { Pyramid, pyramidFactory } from './pyramidFactory';
-import { beforeEach } from 'vitest';
+import { afterEach, beforeEach } from 'vitest';
 import { SubmitAnswer } from './submitAnswer';
 import { FakeQuestionGateway } from '../../../adapters/secondary/gateways/fakeQuestionGateway';
+import { Question } from '../../models/question';
+import { RetrieveQuestion } from '../question-retrieval/retrieveQuestion';
+import { vi } from 'vitest';
+import { PyramidService } from '../../models/pyramidService';
+import { AnswerValidationService } from '../../models/answerValidationService';
+import { QuestionService } from '../../models/questionService';
 
 describe('Answer submission Use Case', () => {
-  let pyramid: Pyramid;
+  let pyramidService: PyramidService;
   let questionGateway: FakeQuestionGateway;
   let submitAnswer: SubmitAnswer;
+  let retrieveQuestion: RetrieveQuestion;
+  let answerValidationService: AnswerValidationService;
+  let questionService: QuestionService;
 
   beforeEach(() => {
-    pyramid = pyramidFactory();
+    pyramidService = new PyramidService({
+      levelIndexes: [],
+      reachedStepIndex: 0,
+    });
     questionGateway = new FakeQuestionGateway();
-    submitAnswer = new SubmitAnswer(pyramid, questionGateway);
+    questionService = new QuestionService();
+    retrieveQuestion = new RetrieveQuestion(questionGateway, questionService);
+    answerValidationService = new AnswerValidationService();
+    submitAnswer = new SubmitAnswer(
+      pyramidService,
+      questionGateway,
+      retrieveQuestion,
+      answerValidationService,
+    );
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('Before submitting an answer, the pyramid should be reset', () => {
-    expect(submitAnswer.pyramidIndexSignal()).toBe(0);
+    expect(pyramidService.pyramidIndexSignal()).toBe(0);
   });
 
   it('After submitting a right answer, the pyramid should increase step', async () => {
     questionGateway.correctAnswerByQuestionId = { 1: 'A' };
     await submitAnswer.execute('1', 'A');
-    expect(submitAnswer.pyramidIndexSignal()).toBe(1);
+    expect(pyramidService.pyramidIndexSignal()).toBe(1);
   });
 
   it('After submitting two right answers, the pyramid should have increased twice', async () => {
     questionGateway.correctAnswerByQuestionId = { 1: 'A' };
     await submitAnswer.execute('1', 'A');
     await submitAnswer.execute('1', 'A');
-    expect(submitAnswer.pyramidIndexSignal()).toBe(2);
+    expect(pyramidService.pyramidIndexSignal()).toBe(2);
+  });
+
+  it('should store the current submission status', async () => {
+    questionGateway.correctAnswerByQuestionId = { 1: 'A' };
+    await submitAnswer.execute('1', 'A');
+    expect(answerValidationService.answerValidationSignal()).toEqual({
+      validation: true,
+    });
   });
 
   it('After submitting a wrong answer, the pyramid should reset', async () => {
     questionGateway.correctAnswerByQuestionId = { 1: 'A' };
-    pyramid.reachedStepIndex = 1;
+    pyramidService.pyramid.reachedStepIndex = 1;
     await submitAnswer.execute('1', 'B');
-    expect(submitAnswer.pyramidIndexSignal()).toBe(0);
+    expect(pyramidService.pyramidIndexSignal()).toBe(0);
   });
 
   it('After submitting a wrong answer, the pyramid should fall to the last level', async () => {
     questionGateway.correctAnswerByQuestionId = { 1: 'A' };
-    pyramid.levelIndexes = [1];
-    pyramid.reachedStepIndex = 1;
+    pyramidService.pyramid.levelIndexes = [1];
+    pyramidService.pyramid.reachedStepIndex = 1;
     await submitAnswer.execute('1', 'B');
-    expect(submitAnswer.pyramidIndexSignal()).toBe(1);
+    expect(pyramidService.pyramidIndexSignal()).toBe(1);
   });
 
   it('After submitting a wrong answer, and having reached the second level, the pyramid should fall to the last level', async () => {
     questionGateway.correctAnswerByQuestionId = { 1: 'A' };
-    pyramid.levelIndexes = [1, 2, 8];
-    pyramid.reachedStepIndex = 2;
+    pyramidService.pyramid.levelIndexes = [1, 2, 8];
+    pyramidService.pyramid.reachedStepIndex = 2;
     await submitAnswer.execute('1', 'B');
-    expect(submitAnswer.pyramidIndexSignal()).toBe(2);
+    expect(pyramidService.pyramidIndexSignal()).toBe(2);
   });
+
+  it('should retrieve the next question after submitting a right answer and a specific delay', async () => {
+    questionGateway.currentQuestion = nextQuestionAfterRightAnswer;
+    questionGateway.correctAnswerByQuestionId = { 1: 'A' };
+    await submitAnswer.execute('1', 'A');
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(questionService.currentQuestionSignal()).toEqual(
+      nextQuestionAfterRightAnswer,
+    );
+  });
+
+  const nextQuestionAfterRightAnswer: Question = {
+    id: '2',
+    label: 'What is the capital of Germany?',
+    possibleAnswers: {
+      A: 'Berlin',
+      B: 'Madrid',
+      C: 'Paris',
+      D: 'London',
+    },
+  };
 });

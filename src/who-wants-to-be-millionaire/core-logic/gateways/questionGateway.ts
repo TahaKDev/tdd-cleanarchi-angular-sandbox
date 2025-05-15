@@ -1,7 +1,4 @@
-import {
-  AnswerLetter,
-  Question,
-} from '../usecases/question-retrieval/question';
+import { AnswerLetter, Question } from '../models/question';
 
 export interface QuestionGateway {
   submitAnswer(

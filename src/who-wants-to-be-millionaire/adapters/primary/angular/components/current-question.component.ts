@@ -3,7 +3,7 @@ import { QuestionTitleComponent } from './question-title.component';
 import { NgIf, NgOptimizedImage } from '@angular/common';
 import { PossibleAnswersComponent } from './possible-answers.component';
 import { CountdownComponent } from './countdown.component';
-import { Question } from '../../../core-logic/usecases/question-retrieval/question';
+import { Question } from '../../../../core-logic/models/question';
 
 @Component({
   selector: 'current-question',
@@ -20,7 +20,6 @@ import { Question } from '../../../core-logic/usecases/question-retrieval/questi
         <game-countdown></game-countdown>
         <question-title [label]="question.label"></question-title>
         <possible-answers
-          [answers]="question.possibleAnswers"
           (onGivenAnswer)="onGivenAnswer.emit($event)"
         ></possible-answers>
       </div>

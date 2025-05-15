@@ -1,7 +1,6 @@
-import { Component, Input, Signal, signal } from '@angular/core';
-import { Pyramid } from '../../../core-logic/usecases/answer-submission/pyramidFactory';
+import { Component, Signal, signal } from '@angular/core';
 import { NgClass, NgForOf } from '@angular/common';
-import { SubmitAnswer } from '../../../core-logic/usecases/answer-submission/submitAnswer';
+import { PyramidService } from '../../../../core-logic/models/pyramidService';
 
 @Component({
   selector: 'pyramid',
@@ -36,8 +35,8 @@ export class PyramidComponent {
     undefined,
   );
 
-  constructor(private readonly submitAnswer: SubmitAnswer) {
-    this.pyramidIndexSignal = this.submitAnswer.pyramidIndexSignal;
+  constructor(private readonly pyramidService: PyramidService) {
+    this.pyramidIndexSignal = this.pyramidService.pyramidIndexSignal;
   }
 
   pyramidValues: { amount: string }[] = [

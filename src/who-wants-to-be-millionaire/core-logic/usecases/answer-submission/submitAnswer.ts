@@ -1,19 +1,16 @@
-import { Pyramid } from './pyramidFactory';
 import { QuestionGateway } from '../../gateways/questionGateway';
-import { signal } from '@angular/core';
-import { AnswerLetter, Question } from '../question-retrieval/question';
+import { AnswerLetter, Question } from '../../models/question';
+import { RetrieveQuestion } from '../question-retrieval/retrieveQuestion';
+import { PyramidService } from '../../models/pyramidService';
+import { AnswerValidationService } from '../../models/answerValidationService';
 
 export class SubmitAnswer {
-  private pyramidIndex$ = signal<number | undefined>(undefined);
-
-  readonly pyramidIndexSignal = this.pyramidIndex$.asReadonly();
-
   constructor(
-    private readonly pyramid: Pyramid,
+    private readonly pyramidService: PyramidService,
     private readonly questionGateway: QuestionGateway,
-  ) {
-    this.pyramidIndex$.set(0);
-  }
+    private readonly retrieveQuestion: RetrieveQuestion,
+    private readonly answerValidationService: AnswerValidationService,
+  ) {}
 
   async execute(
     questionId: Question['id'],
@@ -25,23 +22,11 @@ export class SubmitAnswer {
     );
 
     if (isRightAnswer) {
-      this.pyramid.reachedStepIndex++;
-      this.pyramidIndex$.set(this.pyramid.reachedStepIndex);
+      this.answerValidationService.storeValidationStatus(true);
+      this.pyramidService.increase();
+      await this.retrieveQuestion.execute();
     } else {
-      this.pyramidIndex$.set(
-        this.pyramid.levelIndexes.length > 0
-          ? this.pyramid.levelIndexes[this.findLastReachedLevelIndex()]
-          : 0,
-      );
+      this.pyramidService.decrease();
     }
-  }
-
-  private findLastReachedLevelIndex(): number {
-    for (let i = this.pyramid.levelIndexes.length - 1; i >= 0; i--) {
-      if (this.pyramid.levelIndexes[i] <= this.pyramid.reachedStepIndex) {
-        return i;
-      }
-    }
-    return 0;
   }
 }

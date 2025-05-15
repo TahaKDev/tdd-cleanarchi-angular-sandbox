@@ -2,12 +2,10 @@ import { Component, OnInit, signal, Signal } from '@angular/core';
 import { JokersComponent } from './jokers.component';
 import { PyramidComponent } from './pyramid.component';
 import { CurrentQuestionComponent } from './current-question.component';
-import { SubmitAnswer } from '../../../core-logic/usecases/answer-submission/submitAnswer';
-import {
-  AnswerLetter,
-  Question,
-} from '../../../core-logic/usecases/question-retrieval/question';
-import { RetrieveQuestion } from '../../../core-logic/usecases/question-retrieval/retrieveQuestion';
+import { SubmitAnswer } from '../../../../core-logic/usecases/answer-submission/submitAnswer';
+import { AnswerLetter, Question } from '../../../../core-logic/models/question';
+import { RetrieveQuestion } from '../../../../core-logic/usecases/question-retrieval/retrieveQuestion';
+import { QuestionService } from '../../../../core-logic/models/questionService';
 
 @Component({
   selector: 'game',
@@ -32,9 +30,10 @@ export class GameComponent implements OnInit {
 
   constructor(
     private readonly retrieveQuestion: RetrieveQuestion,
+    private readonly questionService: QuestionService,
     private readonly submitAnswer: SubmitAnswer,
   ) {
-    this.currentQuestionSignal = this.retrieveQuestion.currentQuestionSignal;
+    this.currentQuestionSignal = this.questionService.currentQuestionSignal;
   }
 
   async ngOnInit() {

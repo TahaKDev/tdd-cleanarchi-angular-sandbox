@@ -9,47 +9,86 @@ import { routes } from './app.routes';
 import { provideRedux } from '@reduxjs/angular-redux';
 import { store } from './store';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import {
-  Pyramid,
-  pyramidFactory,
-} from './core-logic/usecases/answer-submission/pyramidFactory';
 import { SubmitAnswer } from './core-logic/usecases/answer-submission/submitAnswer';
 import { QuestionGateway } from './core-logic/gateways/questionGateway';
 import { RetrieveQuestion } from './core-logic/usecases/question-retrieval/retrieveQuestion';
-import {
-  DeterministicQuestionPoolPicker,
-  LocalPoolQuestionGateway,
-  RandomQuestionPoolPicker,
-} from './adapters/secondary/gateways/localPoolQuestionGateway';
+import { LocalPoolQuestionGateway } from './adapters/secondary/gateways/local-questions-pool/localPoolQuestionGateway';
+import { RandomQuestionsPoolPicker } from './adapters/secondary/gateways/local-questions-pool/question-picker/randomQuestionsPoolPicker';
+import { PyramidService } from './core-logic/models/pyramidService';
+import { AnswerValidationService } from './core-logic/models/answerValidationService';
+import { QuestionService } from './core-logic/models/questionService';
+import { presentPossibleAnswers } from './adapters/primary/angular/presenters/answersPresenter';
 
-export const providePyramid: Provider = {
-  provide: 'PYRAMID',
+export const providePyramidService: Provider = {
+  provide: PyramidService,
   useFactory: () => {
-    return pyramidFactory([0, 4, 8, 11]);
+    return new PyramidService({
+      levelIndexes: [0, 4, 8, 11],
+      reachedStepIndex: 0,
+    });
   },
+};
+
+export const provideAnswerPresenter: Provider = {
+  provide: 'AnswerPresenter',
+  useFactory: (
+    questionService: QuestionService,
+    answerValidationService: AnswerValidationService,
+  ) => {
+    return presentPossibleAnswers(questionService, answerValidationService);
+  },
+  deps: [QuestionService, AnswerValidationService],
+};
+
+export const provideQuestionService: Provider = {
+  provide: QuestionService,
+  useClass: QuestionService,
+};
+
+export const provideAnswerValidationService: Provider = {
+  provide: AnswerValidationService,
+  useClass: AnswerValidationService,
 };
 
 export const provideSubmitAnswer = {
   provide: SubmitAnswer,
-  useFactory: (pyramid: Pyramid, questionGateway: QuestionGateway) => {
-    return new SubmitAnswer(pyramid, questionGateway);
+  useFactory: (
+    pyramidService: PyramidService,
+    questionGateway: QuestionGateway,
+    retrieveQuestion: RetrieveQuestion,
+    answerValidationService: AnswerValidationService,
+  ) => {
+    return new SubmitAnswer(
+      pyramidService,
+      questionGateway,
+      retrieveQuestion,
+      answerValidationService,
+    );
   },
-  deps: ['PYRAMID', 'QUESTION_GATEWAY'],
+  deps: [
+    PyramidService,
+    'QUESTION_GATEWAY',
+    RetrieveQuestion,
+    AnswerValidationService,
+  ],
 };
 
 export const provideRetrieveQuestion = {
   provide: RetrieveQuestion,
-  useFactory: (questionGateway: QuestionGateway) => {
-    return new RetrieveQuestion(questionGateway);
+  useFactory: (
+    questionGateway: QuestionGateway,
+    questionService: QuestionService,
+  ) => {
+    return new RetrieveQuestion(questionGateway, questionService);
   },
-  deps: ['QUESTION_GATEWAY'],
+  deps: ['QUESTION_GATEWAY', QuestionService],
 };
 
 export const provideQuestionGateway: Provider = {
   provide: 'QUESTION_GATEWAY',
   useFactory: () => {
     return new LocalPoolQuestionGateway(
-      new RandomQuestionPoolPicker(),
+      new RandomQuestionsPoolPicker(),
       [
         {
           id: '1',
@@ -78,10 +117,13 @@ export const provideQuestionGateway: Provider = {
 };
 
 export const provideGameDependencies: Provider[] = [
-  providePyramid,
+  providePyramidService,
   provideQuestionGateway,
   provideSubmitAnswer,
   provideRetrieveQuestion,
+  provideAnswerValidationService,
+  provideQuestionService,
+  provideAnswerPresenter,
 ];
 
 export const appConfig: ApplicationConfig = {

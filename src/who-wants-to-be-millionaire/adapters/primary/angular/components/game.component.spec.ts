@@ -2,9 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GameComponent } from './game.component';
 import { By } from '@angular/platform-browser';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { FakeQuestionGateway } from '../../secondary/gateways/fakeQuestionGateway';
-import { provideGameDependencies } from '../../../app.config';
-import { Question } from '../../../core-logic/usecases/question-retrieval/question';
+import { FakeQuestionGateway } from '../../../secondary/gateways/fakeQuestionGateway';
+import { provideGameDependencies } from '../../../../app.config';
+import { Question } from '../../../../core-logic/models/question';
 import { beforeEach, it } from 'vitest';
 
 describe('Game component', () => {

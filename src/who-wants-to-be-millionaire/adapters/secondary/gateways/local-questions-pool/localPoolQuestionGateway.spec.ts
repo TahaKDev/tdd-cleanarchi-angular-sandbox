@@ -1,18 +1,18 @@
-import {
-  DeterministicQuestionPoolPicker,
-  LocalPoolQuestionGateway,
-} from './localPoolQuestionGateway';
-import { Question } from '../../../core-logic/usecases/question-retrieval/question';
+import { LocalPoolQuestionGateway } from './localPoolQuestionGateway';
+import { Question } from '../../../../core-logic/models/question';
+import { DeterministicQuestionsPoolPicker } from './question-picker/deterministicQuestionsPoolPicker';
 
 describe('LocalPoolQuestionGateway', () => {
   let questionGateway: LocalPoolQuestionGateway;
-  let questionPoolPicker: DeterministicQuestionPoolPicker;
+  let questionPoolPicker: DeterministicQuestionsPoolPicker;
+  let questionsPool: Question[];
 
   beforeEach(() => {
-    questionPoolPicker = new DeterministicQuestionPoolPicker();
+    questionsPool = [aQuestion, anotherQuestion];
+    questionPoolPicker = new DeterministicQuestionsPoolPicker();
     questionGateway = new LocalPoolQuestionGateway(
       questionPoolPicker,
-      [aQuestion, anotherQuestion],
+      questionsPool,
       { 1: 'A' },
     );
   });
@@ -21,6 +21,12 @@ describe('LocalPoolQuestionGateway', () => {
     it('should retrieve a random question from the pool', async () => {
       questionPoolPicker.nextQuestionId = '2';
       expect(await questionGateway.nextQuestion()).toEqual(anotherQuestion);
+    });
+
+    it('should prevent retrieving a question that has already been retrieved', async () => {
+      questionPoolPicker.nextQuestionId = '2';
+      await questionGateway.nextQuestion();
+      expect(questionsPool).toEqual([aQuestion]);
     });
   });
 

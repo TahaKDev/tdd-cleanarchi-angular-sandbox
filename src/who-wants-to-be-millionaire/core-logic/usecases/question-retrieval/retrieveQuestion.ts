@@ -1,16 +1,14 @@
 import { QuestionGateway } from '../../gateways/questionGateway';
-import { Question } from './question';
-import { signal } from '@angular/core';
+import { QuestionService } from '../../models/questionService';
 
 export class RetrieveQuestion {
-  private currentQuestion$ = signal<Question | undefined>(undefined);
-
-  readonly currentQuestionSignal = this.currentQuestion$.asReadonly();
-
-  constructor(private questionGateway: QuestionGateway) {}
+  constructor(
+    private questionGateway: QuestionGateway,
+    private questionService: QuestionService,
+  ) {}
 
   async execute(): Promise<void> {
     const question = await this.questionGateway.nextQuestion();
-    this.currentQuestion$.set(question);
+    this.questionService.storeCurrentQuestion(question);
   }
 }
