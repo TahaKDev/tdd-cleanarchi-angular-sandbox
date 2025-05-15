@@ -24,7 +24,9 @@ export class SubmitAnswer {
     if (isRightAnswer) {
       this.answerValidationService.storeValidationStatus(true);
       this.pyramidService.increase();
-      await this.retrieveQuestion.execute();
+      setTimeout(async () => {
+        await this.retrieveQuestion.execute();
+      }, 3000);
     } else {
       this.pyramidService.decrease();
     }

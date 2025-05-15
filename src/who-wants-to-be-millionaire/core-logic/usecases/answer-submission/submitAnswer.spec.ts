@@ -86,15 +86,24 @@ describe('Answer submission Use Case', () => {
     expect(pyramidService.pyramidIndexSignal()).toBe(2);
   });
 
-  it('should retrieve the next question after submitting a right answer and a specific delay', async () => {
-    questionGateway.currentQuestion = nextQuestionAfterRightAnswer;
-    questionGateway.correctAnswerByQuestionId = { 1: 'A' };
-    await submitAnswer.execute('1', 'A');
-    await vi.advanceTimersByTimeAsync(3000);
-    expect(questionService.currentQuestionSignal()).toEqual(
-      nextQuestionAfterRightAnswer,
-    );
-  });
+  it.each`
+    delay   |
+    ${2999}
+    ${3000}
+  `(
+    'should retrieve the next question after submitting a right answer and a specific delay',
+    async ({ delay }: { delay: number }) => {
+      questionGateway.currentQuestion = nextQuestionAfterRightAnswer;
+      questionGateway.correctAnswerByQuestionId = { 1: 'A' };
+      await submitAnswer.execute('1', 'A');
+      await vi.advanceTimersByTimeAsync(delay);
+      if (delay === 3000) {
+        expect(questionService.currentQuestionSignal()).toEqual(
+          nextQuestionAfterRightAnswer,
+        );
+      } else expect(questionService.currentQuestionSignal()).toBe(undefined);
+    },
+  );
 
   const nextQuestionAfterRightAnswer: Question = {
     id: '2',
