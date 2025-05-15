@@ -20,7 +20,7 @@ import { QuestionGateway } from './core-logic/gateways/questionGateway';
 export const providePyramid: Provider = {
   provide: 'PYRAMID',
   useFactory: () => {
-    return pyramidFactory();
+    return pyramidFactory([0, 4, 8, 11]);
   },
 };
 

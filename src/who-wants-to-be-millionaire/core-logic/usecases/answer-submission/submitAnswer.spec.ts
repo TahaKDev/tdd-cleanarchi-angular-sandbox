@@ -30,4 +30,20 @@ describe('Answer submission Use Case', () => {
     await submitAnswer.execute('A');
     expect(submitAnswer.pyramidIndexSignal()).toBe(0);
   });
+
+  it('After submitting a wrong answer, the pyramid should fall to the last level', async () => {
+    questionGateway.correctAnswer = 'B';
+    pyramid.levelIndexes = [1];
+    pyramid.reachedStepIndex = 1;
+    await submitAnswer.execute('A');
+    expect(submitAnswer.pyramidIndexSignal()).toBe(1);
+  });
+
+  it('After submitting a wrong answer, and having reached the second level, the pyramid should fall to the last level', async () => {
+    questionGateway.correctAnswer = 'B';
+    pyramid.levelIndexes = [1, 2, 8];
+    pyramid.reachedStepIndex = 2;
+    await submitAnswer.execute('A');
+    expect(submitAnswer.pyramidIndexSignal()).toBe(2);
+  });
 });

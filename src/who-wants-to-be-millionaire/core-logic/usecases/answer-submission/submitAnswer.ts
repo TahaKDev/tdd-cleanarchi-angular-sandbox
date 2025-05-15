@@ -16,8 +16,21 @@ export class SubmitAnswer {
 
   async execute(givenAnswer: string): Promise<void> {
     const isRightAnswer = await this.questionGateway.submitAnswer(givenAnswer);
-    if (isRightAnswer) this.pyramid.reachedStepIndex++;
-    else this.pyramid.reachedStepIndex = 0;
-    this.pyramidIndex$.set(this.pyramid.reachedStepIndex);
+
+    if (isRightAnswer)
+      this.pyramidIndex$.set(this.pyramid.reachedStepIndex + 1);
+    else {
+      this.pyramidIndex$.set(this.pyramid.levelIndexes.length > 0 ? this.pyramid.levelIndexes[this.findLastReachedLevelIndex()] : 0);
+    }
   }
+
+  private findLastReachedLevelIndex(): number {
+    for (let i = this.pyramid.levelIndexes.length - 1; i >= 0; i--) {
+      if (this.pyramid.levelIndexes[i] <= this.pyramid.reachedStepIndex) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
 }
