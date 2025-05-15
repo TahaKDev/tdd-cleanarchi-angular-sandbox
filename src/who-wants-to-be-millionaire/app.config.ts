@@ -9,14 +9,27 @@ import { routes } from './app.routes';
 import { provideRedux } from '@reduxjs/angular-redux';
 import { store } from './store';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { pyramidFactory } from './core-logic/usecases/answer-submission/pyramidFactory';
+import {
+  Pyramid,
+  pyramidFactory,
+} from './core-logic/usecases/answer-submission/pyramidFactory';
 import { FakeQuestionGateway } from './adapters/secondary/gateways/fakeQuestionGateway';
+import { SubmitAnswer } from './core-logic/usecases/answer-submission/submitAnswer';
+import { QuestionGateway } from './core-logic/gateways/questionGateway';
 
 export const providePyramid: Provider = {
   provide: 'PYRAMID',
   useFactory: () => {
     return pyramidFactory();
   },
+};
+
+export const provideSubmitAnswer = {
+  provide: SubmitAnswer,
+  useFactory: (pyramid: Pyramid, questionGateway: QuestionGateway) => {
+    return new SubmitAnswer(pyramid, questionGateway);
+  },
+  deps: ['PYRAMID', 'QUESTION_GATEWAY'],
 };
 
 export const provideQuestionGateway: Provider = {
@@ -28,13 +41,18 @@ export const provideQuestionGateway: Provider = {
   },
 };
 
+export const provideGameDependencies: Provider[] = [
+  providePyramid,
+  provideQuestionGateway,
+  provideSubmitAnswer,
+];
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideRedux({ store }),
     provideAnimationsAsync(),
-    providePyramid,
-    provideQuestionGateway,
+    ...provideGameDependencies,
   ],
 };

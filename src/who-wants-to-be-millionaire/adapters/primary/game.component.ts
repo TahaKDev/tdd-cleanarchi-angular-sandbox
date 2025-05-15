@@ -4,8 +4,6 @@ import { PyramidComponent } from './pyramid.component';
 import { CurrentQuestionComponent } from './current-question.component';
 import { Pyramid } from '../../core-logic/usecases/answer-submission/pyramidFactory';
 import { SubmitAnswer } from '../../core-logic/usecases/answer-submission/submitAnswer';
-import { providePyramid, provideQuestionGateway } from '../../app.config';
-import { QuestionGateway } from '../../core-logic/gateways/questionGateway';
 
 @Component({
   selector: 'game',
@@ -21,17 +19,6 @@ import { QuestionGateway } from '../../core-logic/gateways/questionGateway';
     </div>
   </div>`,
   imports: [CurrentQuestionComponent, JokersComponent, PyramidComponent],
-  providers: [
-    {
-      provide: SubmitAnswer,
-      useFactory: (pyramid: Pyramid, questionGateway: QuestionGateway) => {
-        return new SubmitAnswer(pyramid, questionGateway);
-      },
-      deps: ['PYRAMID', 'QUESTION_GATEWAY'],
-    },
-    provideQuestionGateway,
-    providePyramid,
-  ],
 })
 export class GameComponent {
   pyramid: Pyramid | undefined = undefined;

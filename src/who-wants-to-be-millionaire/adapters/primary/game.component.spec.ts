@@ -1,9 +1,4 @@
-import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GameComponent } from './game.component';
 import { By } from '@angular/platform-browser';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
@@ -12,6 +7,7 @@ import {
   pyramidFactory,
 } from '../../core-logic/usecases/answer-submission/pyramidFactory';
 import { FakeQuestionGateway } from '../secondary/gateways/fakeQuestionGateway';
+import { provideGameDependencies } from '../../app.config';
 
 describe('Game component', () => {
   let pyramid: Pyramid;
@@ -23,7 +19,7 @@ describe('Game component', () => {
     pyramid = pyramidFactory();
     TestBed.configureTestingModule({
       imports: [GameComponent],
-      providers: [provideNoopAnimations()],
+      providers: [provideNoopAnimations(), ...provideGameDependencies],
     })
       .overrideProvider('QUESTION_GATEWAY', { useValue: questionGateway })
       .compileComponents();
@@ -45,25 +41,24 @@ describe('Game component', () => {
     ${'B'}      | ${'B'}
   `(
     'upon a right answer, the pyramid should increase',
-    fakeAsync(({ givenAnswer, correctAnswer }) => {
+    async ({ givenAnswer, correctAnswer }) => {
       questionGateway.correctAnswer = correctAnswer;
-      giveAnswer(givenAnswer, fixture);
+      await giveAnswer(givenAnswer, fixture);
       expectPyramidStepHighlightStatus(1, true);
       expectPyramidStepHighlightStatus(0, false);
-    }),
+    },
   );
 
-  const giveAnswer = (
+  const giveAnswer = async (
     answer: string,
     fixture: ComponentFixture<GameComponent>,
   ) => {
     fixture.debugElement
       .query(By.css(`[data-testid="${answer}:"]`))
       .nativeElement.click();
-
-    tick();
-
-    fixture.detectChanges(); // CD pass that sends the HTTP call
+    fixture.detectChanges();
+    await fixture.whenRenderingDone();
+    fixture.detectChanges();
   };
 
   const expectPyramidStepHighlightStatus = (
