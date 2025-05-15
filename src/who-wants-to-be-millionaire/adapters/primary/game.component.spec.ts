@@ -27,7 +27,6 @@ describe('Game component', () => {
     fixture = TestBed.createComponent(GameComponent);
     const component = fixture.componentInstance;
 
-    component.pyramid = pyramid;
     fixture.detectChanges();
   });
 
@@ -42,8 +41,11 @@ describe('Game component', () => {
   `(
     'upon a right answer, the pyramid should increase',
     async ({ givenAnswer, correctAnswer }) => {
+      // GIVEN
       questionGateway.correctAnswer = correctAnswer;
+      // WHEN
       await giveAnswer(givenAnswer, fixture);
+      // THEN
       expectPyramidStepHighlightStatus(1, true);
       expectPyramidStepHighlightStatus(0, false);
     },

@@ -12,7 +12,5 @@ import { Pyramid } from './core-logic/usecases/answer-submission/pyramidFactory'
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  @Input() pyramid: Pyramid | undefined = undefined;
-
   title = 'tdd-cleanarchi-angular-15-mai-2025';
 }

@@ -6,27 +6,28 @@ import { FakeQuestionGateway } from '../../../adapters/secondary/gateways/fakeQu
 describe('Answer submission Use Case', () => {
   let pyramid: Pyramid;
   let questionGateway: FakeQuestionGateway;
+  let submitAnswer: SubmitAnswer;
 
   beforeEach(() => {
     pyramid = pyramidFactory();
-    pyramid.reachedStepIndex = 0;
     questionGateway = new FakeQuestionGateway();
+    submitAnswer = new SubmitAnswer(pyramid, questionGateway);
   });
 
   it('Before submitting an answer, the pyramid should be reset', () => {
-    expect(pyramid.reachedStepIndex).toBe(0);
+    expect(submitAnswer.pyramidIndexSignal()).toBe(0);
   });
 
   it('After submitting a right answer, the pyramid should increase step', async () => {
     questionGateway.correctAnswer = 'A';
-    await new SubmitAnswer(pyramid, questionGateway).execute('A');
-    expect(pyramid.reachedStepIndex).toBe(1);
+    await submitAnswer.execute('A');
+    expect(submitAnswer.pyramidIndexSignal()).toBe(1);
   });
 
   it('After submitting a wrong answer, the pyramid should reset', async () => {
     questionGateway.correctAnswer = 'B';
     pyramid.reachedStepIndex = 1;
-    await new SubmitAnswer(pyramid, questionGateway).execute('A');
-    expect(pyramid.reachedStepIndex).toBe(0);
+    await submitAnswer.execute('A');
+    expect(submitAnswer.pyramidIndexSignal()).toBe(0);
   });
 });

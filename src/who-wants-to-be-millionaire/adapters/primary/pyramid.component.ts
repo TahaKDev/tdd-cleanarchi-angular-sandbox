@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Signal, signal } from '@angular/core';
 import { Pyramid } from '../../core-logic/usecases/answer-submission/pyramidFactory';
 import { NgClass, NgForOf } from '@angular/common';
+import { SubmitAnswer } from '../../core-logic/usecases/answer-submission/submitAnswer';
 
 @Component({
   selector: 'pyramid',
@@ -16,7 +17,7 @@ import { NgClass, NgForOf } from '@angular/common';
             <div
               [ngClass]="[
                 'mb-2',
-                pyramid!.reachedStepIndex === pyramidValues.length - 1 - i
+                pyramidIndexSignal() === pyramidValues.length - 1 - i
                   ? 'p-2 rounded-full bg-orange-500'
                   : '',
               ]"
@@ -31,7 +32,13 @@ import { NgClass, NgForOf } from '@angular/common';
   imports: [NgForOf, NgClass],
 })
 export class PyramidComponent {
-  @Input() pyramid: Pyramid | undefined = undefined;
+  pyramidIndexSignal: Signal<number | undefined> = signal<number | undefined>(
+    undefined,
+  );
+
+  constructor(private readonly submitAnswer: SubmitAnswer) {
+    this.pyramidIndexSignal = this.submitAnswer.pyramidIndexSignal;
+  }
 
   pyramidValues: { amount: string }[] = [
     { amount: '1 MILLION €' },

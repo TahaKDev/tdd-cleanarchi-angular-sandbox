@@ -1,8 +1,7 @@
-import { Component, Inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { JokersComponent } from './jokers.component';
 import { PyramidComponent } from './pyramid.component';
 import { CurrentQuestionComponent } from './current-question.component';
-import { Pyramid } from '../../core-logic/usecases/answer-submission/pyramidFactory';
 import { SubmitAnswer } from '../../core-logic/usecases/answer-submission/submitAnswer';
 
 @Component({
@@ -14,23 +13,14 @@ import { SubmitAnswer } from '../../core-logic/usecases/answer-submission/submit
     <div class="flex flex-col w-6/12 bg-gradient-to-r from-indigo-900 ml-5">
       <div>
         <jokers />
-        <pyramid [pyramid]="pyramid" />
+        <pyramid />
       </div>
     </div>
   </div>`,
   imports: [CurrentQuestionComponent, JokersComponent, PyramidComponent],
 })
 export class GameComponent {
-  pyramid: Pyramid | undefined = undefined;
-
-  constructor(
-    @Inject('PYRAMID') private pyramidValue: Pyramid,
-    private submitAnswer: SubmitAnswer,
-  ) {}
-
-  ngOnInit() {
-    this.pyramid = this.pyramidValue;
-  }
+  constructor(private submitAnswer: SubmitAnswer) {}
 
   async _submitAnswer(answer: string) {
     await this.submitAnswer.execute(answer);
