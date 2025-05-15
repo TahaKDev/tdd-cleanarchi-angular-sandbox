@@ -13,9 +13,14 @@ import {
   Pyramid,
   pyramidFactory,
 } from './core-logic/usecases/answer-submission/pyramidFactory';
-import { FakeQuestionGateway } from './adapters/secondary/gateways/fakeQuestionGateway';
 import { SubmitAnswer } from './core-logic/usecases/answer-submission/submitAnswer';
 import { QuestionGateway } from './core-logic/gateways/questionGateway';
+import { RetrieveQuestion } from './core-logic/usecases/question-retrieval/retrieveQuestion';
+import {
+  DeterministicQuestionPoolPicker,
+  LocalPoolQuestionGateway,
+  RandomQuestionPoolPicker,
+} from './adapters/secondary/gateways/localPoolQuestionGateway';
 
 export const providePyramid: Provider = {
   provide: 'PYRAMID',
@@ -32,12 +37,43 @@ export const provideSubmitAnswer = {
   deps: ['PYRAMID', 'QUESTION_GATEWAY'],
 };
 
+export const provideRetrieveQuestion = {
+  provide: RetrieveQuestion,
+  useFactory: (questionGateway: QuestionGateway) => {
+    return new RetrieveQuestion(questionGateway);
+  },
+  deps: ['QUESTION_GATEWAY'],
+};
+
 export const provideQuestionGateway: Provider = {
   provide: 'QUESTION_GATEWAY',
   useFactory: () => {
-    const questionGateway = new FakeQuestionGateway();
-    questionGateway.correctAnswer = 'B';
-    return questionGateway;
+    return new LocalPoolQuestionGateway(
+      new RandomQuestionPoolPicker(),
+      [
+        {
+          id: '1',
+          label: 'What is the capital of France?',
+          possibleAnswers: {
+            A: 'Paris',
+            B: 'London',
+            C: 'Berlin',
+            D: 'Madrid',
+          },
+        },
+        {
+          id: '2',
+          label: 'What is the capital of Germany?',
+          possibleAnswers: {
+            A: 'Madrid',
+            B: 'London',
+            C: 'Paris',
+            D: 'Berlin',
+          },
+        },
+      ],
+      { 1: 'A', 2: 'D' },
+    );
   },
 };
 
@@ -45,6 +81,7 @@ export const provideGameDependencies: Provider[] = [
   providePyramid,
   provideQuestionGateway,
   provideSubmitAnswer,
+  provideRetrieveQuestion,
 ];
 
 export const appConfig: ApplicationConfig = {

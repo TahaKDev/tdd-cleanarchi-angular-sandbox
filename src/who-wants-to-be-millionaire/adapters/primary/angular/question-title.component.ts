@@ -1,13 +1,13 @@
-import {Component, Input} from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'question-title',
   template: `
     <div class="bg-gray-900 my-6 rounded-lg text-white p-2 text-center">
-      {{ title }}
+      {{ label }}
     </div>
-  `
+  `,
 })
 export class QuestionTitleComponent {
-  @Input() title = '';
+  @Input() label: string | undefined = '';
 }

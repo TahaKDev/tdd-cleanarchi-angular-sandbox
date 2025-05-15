@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { QuestionTitleComponent } from './question-title.component';
-import { NgOptimizedImage } from '@angular/common';
+import { NgIf, NgOptimizedImage } from '@angular/common';
 import { PossibleAnswersComponent } from './possible-answers.component';
 import { CountdownComponent } from './countdown.component';
+import { Question } from '../../../core-logic/usecases/question-retrieval/question';
 
 @Component({
   selector: 'current-question',
@@ -15,11 +16,14 @@ import { CountdownComponent } from './countdown.component';
         width="1200"
       />
       <br />
-      <game-countdown></game-countdown>
-      <question-title title="Que signifie l'acronyme TDD ?"></question-title>
-      <possible-answers
-        (onGivenAnswer)="onGivenAnswer.emit($event)"
-      ></possible-answers>
+      <div *ngIf="question" data-testid="question-bloc">
+        <game-countdown></game-countdown>
+        <question-title [label]="question.label"></question-title>
+        <possible-answers
+          [answers]="question.possibleAnswers"
+          (onGivenAnswer)="onGivenAnswer.emit($event)"
+        ></possible-answers>
+      </div>
     </div>
   `,
   imports: [
@@ -27,8 +31,10 @@ import { CountdownComponent } from './countdown.component';
     NgOptimizedImage,
     PossibleAnswersComponent,
     CountdownComponent,
+    NgIf,
   ],
 })
 export class CurrentQuestionComponent {
   @Output() onGivenAnswer: EventEmitter<string> = new EventEmitter<string>();
+  @Input() question: Question | undefined = undefined;
 }

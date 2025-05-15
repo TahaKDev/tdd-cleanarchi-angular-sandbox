@@ -1,3 +1,12 @@
+import {
+  AnswerLetter,
+  Question,
+} from '../usecases/question-retrieval/question';
+
 export interface QuestionGateway {
-  submitAnswer(givenAnswer: string): Promise<boolean>;
+  submitAnswer(
+    questionId: Question['id'],
+    givenAnswer: AnswerLetter,
+  ): Promise<boolean>;
+  nextQuestion(): Promise<Question>;
 }

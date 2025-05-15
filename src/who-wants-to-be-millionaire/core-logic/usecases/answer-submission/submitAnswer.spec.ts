@@ -19,31 +19,38 @@ describe('Answer submission Use Case', () => {
   });
 
   it('After submitting a right answer, the pyramid should increase step', async () => {
-    questionGateway.correctAnswer = 'A';
-    await submitAnswer.execute('A');
+    questionGateway.correctAnswerByQuestionId = { 1: 'A' };
+    await submitAnswer.execute('1', 'A');
     expect(submitAnswer.pyramidIndexSignal()).toBe(1);
   });
 
+  it('After submitting two right answers, the pyramid should have increased twice', async () => {
+    questionGateway.correctAnswerByQuestionId = { 1: 'A' };
+    await submitAnswer.execute('1', 'A');
+    await submitAnswer.execute('1', 'A');
+    expect(submitAnswer.pyramidIndexSignal()).toBe(2);
+  });
+
   it('After submitting a wrong answer, the pyramid should reset', async () => {
-    questionGateway.correctAnswer = 'B';
+    questionGateway.correctAnswerByQuestionId = { 1: 'A' };
     pyramid.reachedStepIndex = 1;
-    await submitAnswer.execute('A');
+    await submitAnswer.execute('1', 'B');
     expect(submitAnswer.pyramidIndexSignal()).toBe(0);
   });
 
   it('After submitting a wrong answer, the pyramid should fall to the last level', async () => {
-    questionGateway.correctAnswer = 'B';
+    questionGateway.correctAnswerByQuestionId = { 1: 'A' };
     pyramid.levelIndexes = [1];
     pyramid.reachedStepIndex = 1;
-    await submitAnswer.execute('A');
+    await submitAnswer.execute('1', 'B');
     expect(submitAnswer.pyramidIndexSignal()).toBe(1);
   });
 
   it('After submitting a wrong answer, and having reached the second level, the pyramid should fall to the last level', async () => {
-    questionGateway.correctAnswer = 'B';
+    questionGateway.correctAnswerByQuestionId = { 1: 'A' };
     pyramid.levelIndexes = [1, 2, 8];
     pyramid.reachedStepIndex = 2;
-    await submitAnswer.execute('A');
+    await submitAnswer.execute('1', 'B');
     expect(submitAnswer.pyramidIndexSignal()).toBe(2);
   });
 });

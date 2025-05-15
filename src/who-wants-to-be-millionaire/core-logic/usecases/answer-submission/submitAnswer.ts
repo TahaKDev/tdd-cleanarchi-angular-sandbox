@@ -1,6 +1,7 @@
 import { Pyramid } from './pyramidFactory';
 import { QuestionGateway } from '../../gateways/questionGateway';
 import { signal } from '@angular/core';
+import { AnswerLetter, Question } from '../question-retrieval/question';
 
 export class SubmitAnswer {
   private pyramidIndex$ = signal<number | undefined>(undefined);
@@ -14,13 +15,24 @@ export class SubmitAnswer {
     this.pyramidIndex$.set(0);
   }
 
-  async execute(givenAnswer: string): Promise<void> {
-    const isRightAnswer = await this.questionGateway.submitAnswer(givenAnswer);
+  async execute(
+    questionId: Question['id'],
+    givenAnswer: AnswerLetter,
+  ): Promise<void> {
+    const isRightAnswer = await this.questionGateway.submitAnswer(
+      questionId,
+      givenAnswer,
+    );
 
-    if (isRightAnswer)
-      this.pyramidIndex$.set(this.pyramid.reachedStepIndex + 1);
-    else {
-      this.pyramidIndex$.set(this.pyramid.levelIndexes.length > 0 ? this.pyramid.levelIndexes[this.findLastReachedLevelIndex()] : 0);
+    if (isRightAnswer) {
+      this.pyramid.reachedStepIndex++;
+      this.pyramidIndex$.set(this.pyramid.reachedStepIndex);
+    } else {
+      this.pyramidIndex$.set(
+        this.pyramid.levelIndexes.length > 0
+          ? this.pyramid.levelIndexes[this.findLastReachedLevelIndex()]
+          : 0,
+      );
     }
   }
 
@@ -32,5 +44,4 @@ export class SubmitAnswer {
     }
     return 0;
   }
-
 }

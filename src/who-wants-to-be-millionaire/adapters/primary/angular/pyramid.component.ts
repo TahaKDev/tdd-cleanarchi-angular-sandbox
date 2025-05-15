@@ -1,7 +1,7 @@
 import { Component, Input, Signal, signal } from '@angular/core';
-import { Pyramid } from '../../core-logic/usecases/answer-submission/pyramidFactory';
+import { Pyramid } from '../../../core-logic/usecases/answer-submission/pyramidFactory';
 import { NgClass, NgForOf } from '@angular/common';
-import { SubmitAnswer } from '../../core-logic/usecases/answer-submission/submitAnswer';
+import { SubmitAnswer } from '../../../core-logic/usecases/answer-submission/submitAnswer';
 
 @Component({
   selector: 'pyramid',
