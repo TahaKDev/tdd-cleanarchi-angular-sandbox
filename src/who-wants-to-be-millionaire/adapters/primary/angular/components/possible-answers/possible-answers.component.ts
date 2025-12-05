@@ -3,26 +3,11 @@ import { KeyValuePipe, NgClass, NgForOf } from '@angular/common';
 import {
   PossibleAnswersVM,
   presentPossibleAnswers,
-} from '../presenters/answersPresenter';
+} from '../../presenters/answersPresenter';
 
 @Component({
   selector: 'possible-answers',
-  template: `
-    <div
-      class="w-full justify-center grid grid-cols-2 text-white gap-4 font-mono text-sm text-left font-bold leading-6 bg-stripes-fuchsia rounded-lg"
-    >
-      <div
-        *ngFor="let answer of possibleAnswersVM() | keyvalue"
-        class="border-0 rounded-lg px-3 py-1"
-        [ngClass]="answersStatusColors[answer.value.status]"
-        [attr.data-testid]="answer.key + ':'"
-        (click)="onGivenAnswer.emit(answer.key)"
-      >
-        <span class="text-orange-500">{{ answer.key }}:</span>
-        {{ answer.value.label }}
-      </div>
-    </div>
-  `,
+  templateUrl: './possible-answers.component.html',
   imports: [NgForOf, KeyValuePipe, NgClass],
 })
 export class PossibleAnswersComponent {

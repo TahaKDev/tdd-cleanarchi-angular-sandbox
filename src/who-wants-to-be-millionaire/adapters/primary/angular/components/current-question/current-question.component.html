@@ -1,0 +1,16 @@
+<div class="text-center">
+  <img
+    ngSrc="/img/jfoucault.jpeg"
+    alt="Jean-Pierre Foucault"
+    height="500"
+    width="1200"
+  />
+  <br />
+  <div *ngIf="question" data-testid="question-bloc">
+    <game-countdown></game-countdown>
+    <question-title [label]="question.label"></question-title>
+    <possible-answers
+      (onGivenAnswer)="onGivenAnswer.emit($event)"
+    ></possible-answers>
+  </div>
+</div>

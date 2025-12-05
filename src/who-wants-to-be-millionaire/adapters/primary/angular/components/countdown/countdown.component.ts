@@ -7,15 +7,11 @@ import {
   transition,
 } from '@angular/animations';
 import { Observable } from 'rxjs';
-import { CountdownService } from '../../../../core-logic/countdown.service';
+import { CountdownService } from '../../../../../core-logic/countdown.service';
 
 @Component({
   selector: 'game-countdown',
-  template: `
-    <div [@countdownAnimation]="seconds">
-      <span> {{ minutes }}:{{ seconds < 10 ? '0' + seconds : seconds }} </span>
-    </div>
-  `,
+  templateUrl: './countdown.component.html',
   styles: [
     `
       div {

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { GameComponent } from './adapters/primary/angular/components/game.component';
+import { GameComponent } from './adapters/primary/angular/components/game/game.component';
 
 @Component({
   selector: 'app-root',

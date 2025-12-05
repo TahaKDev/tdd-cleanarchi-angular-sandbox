@@ -1,0 +1,22 @@
+<div class="mt-3 justify-center rounded-lg text-yellow-500">
+  <div class="flex flex-col justify-center">
+    <ul class="flex flex-col mx-auto pyramid-values">
+      <li
+        *ngFor="let value of pyramidValues; let last = last; let i = index"
+        class="mb-2"
+        [ngClass]="{ 'text-white font-bold': last }"
+      >
+        <div
+          [ngClass]="[
+            'mb-2',
+            pyramidIndexSignal() === pyramidValues.length - 1 - i
+              ? 'p-2 rounded-full bg-orange-500'
+              : '',
+          ]"
+        >
+          {{ value.amount }}
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
